@@ -1,0 +1,257 @@
+{
+  "name": "Mini Refinery Horizon: Easy (Levels 0 and 1)",
+  "notes": [
+    "Two crudes (A light sweet, C medium sour) on one CDU, one swing cut per crude, one distillate pool, two diesel grades, one import.",
+    "All crude and product prices, yields and qualities are taken from Moeve's fictional 'Refinery Horizon' case.",
+    "Netbacks for light products, atmospheric residue and hydrocracker feed are added for this reduced case (Moeve's full case models those units explicitly).",
+    "Standard Diesel takes whatever is left in the pool: standard_share = 1 - premium_share - hydrocracker_share.",
+    "encoding: every decision on qubits (pool split and import in intervals). encoding_mixed_integer: only the operating mode on qubits; pool split and import are continuous (see refinery.complete_plan)."
+  ],
+  "units": {
+    "mass": "kt per 30 days",
+    "price": "EUR/t",
+    "margin": "kEUR"
+  },
+  "crudes": {
+    "A": {
+      "profile": "Light sweet",
+      "price_eur_t": 485,
+      "availability_kt": 180,
+      "yields": {
+        "lpg": 0.04,
+        "naphtha_core": 0.282,
+        "w_nk": 0.036,
+        "kero_core": 0.142,
+        "w_ka": 0.04,
+        "ado_core": 0.225,
+        "w_ar": 0.05,
+        "residue_core": 0.185
+      },
+      "qualities": {
+        "ado_core": {
+          "sulphur_pct": 0.12,
+          "cetane": 54
+        },
+        "ka_swing": {
+          "sulphur_pct": 0.15,
+          "cetane": 50
+        },
+        "ar_swing": {
+          "sulphur_pct": 0.6,
+          "cetane": 43
+        }
+      },
+      "allowed_cdus": [
+        "CDU-1"
+      ]
+    },
+    "C": {
+      "profile": "Medium sour",
+      "price_eur_t": 425,
+      "availability_kt": 260,
+      "yields": {
+        "lpg": 0.03,
+        "naphtha_core": 0.202,
+        "w_nk": 0.036,
+        "kero_core": 0.112,
+        "w_ka": 0.04,
+        "ado_core": 0.225,
+        "w_ar": 0.05,
+        "residue_core": 0.305
+      },
+      "qualities": {
+        "ado_core": {
+          "sulphur_pct": 0.45,
+          "cetane": 49
+        },
+        "ka_swing": {
+          "sulphur_pct": 0.42,
+          "cetane": 46
+        },
+        "ar_swing": {
+          "sulphur_pct": 1.4,
+          "cetane": 40
+        }
+      },
+      "allowed_cdus": [
+        "CDU-1"
+      ]
+    }
+  },
+  "cdus": {
+    "CDU-1": {
+      "capacity_kt": 300,
+      "variable_cost_eur_t": 5
+    }
+  },
+  "swing_cut": {
+    "boundary": "ADO/Residue",
+    "temperature_range_c": [
+      345,
+      375
+    ],
+    "midpoint_c": 360
+  },
+  "prices": {
+    "light_products_netback_eur_t": 600,
+    "atmospheric_residue_netback_eur_t": 320,
+    "hydrocracker_feed_netback_eur_t": 500
+  },
+  "products": {
+    "standard_diesel": {
+      "price_eur_t": 620,
+      "max_sales_kt": 180,
+      "cetane_min": 49,
+      "sulphur_max_pct": 0.25
+    },
+    "premium_diesel": {
+      "price_eur_t": 700,
+      "max_sales_kt": 140,
+      "cetane_min": 55,
+      "sulphur_max_pct": 0.07
+    }
+  },
+  "import_component": {
+    "name": "Premium Diesel component",
+    "price_eur_t": 695,
+    "availability_kt": 50,
+    "cetane": 62,
+    "sulphur_pct": 0.01,
+    "allowed_in": [
+      "premium_diesel"
+    ]
+  },
+  "encoding": [
+    {
+      "name": "crude_A",
+      "kind": "crude_kt",
+      "target": "A",
+      "bits": 2,
+      "values": [
+        0,
+        60,
+        120,
+        180
+      ]
+    },
+    {
+      "name": "crude_C",
+      "kind": "crude_kt",
+      "target": "C",
+      "bits": 2,
+      "values": [
+        0,
+        80,
+        160,
+        240
+      ]
+    },
+    {
+      "name": "cut_temp_A",
+      "kind": "cut_temperature_c",
+      "target": "A",
+      "bits": 2,
+      "values": [
+        345,
+        355,
+        365,
+        375
+      ]
+    },
+    {
+      "name": "cut_temp_C",
+      "kind": "cut_temperature_c",
+      "target": "C",
+      "bits": 2,
+      "values": [
+        345,
+        355,
+        365,
+        375
+      ]
+    },
+    {
+      "name": "premium_share",
+      "kind": "premium_share",
+      "bits": 2,
+      "values": [
+        0,
+        0.16666666666666666,
+        0.3333333333333333,
+        0.5
+      ]
+    },
+    {
+      "name": "hydrocracker_share",
+      "kind": "hydrocracker_share",
+      "bits": 2,
+      "values": [
+        0,
+        0.16666666666666666,
+        0.3333333333333333,
+        0.5
+      ]
+    },
+    {
+      "name": "import",
+      "kind": "import_kt",
+      "bits": 2,
+      "values": [
+        0,
+        15,
+        30,
+        45
+      ]
+    }
+  ],
+  "encoding_mixed_integer": [
+    {
+      "name": "crude_A",
+      "kind": "crude_kt",
+      "target": "A",
+      "bits": 2,
+      "values": [
+        0,
+        60,
+        120,
+        180
+      ]
+    },
+    {
+      "name": "crude_C",
+      "kind": "crude_kt",
+      "target": "C",
+      "bits": 2,
+      "values": [
+        0,
+        80,
+        160,
+        240
+      ]
+    },
+    {
+      "name": "cut_temp_A",
+      "kind": "cut_temperature_c",
+      "target": "A",
+      "bits": 2,
+      "values": [
+        345,
+        355,
+        365,
+        375
+      ]
+    },
+    {
+      "name": "cut_temp_C",
+      "kind": "cut_temperature_c",
+      "target": "C",
+      "bits": 2,
+      "values": [
+        345,
+        355,
+        365,
+        375
+      ]
+    }
+  ]
+}
